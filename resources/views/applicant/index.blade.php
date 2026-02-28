@@ -1,0 +1,1035 @@
+@extends('layouts.app')
+@section('title',  'Кабинет соискателя')
+@section('description', 'Кабинет соискателя')
+@section('body_class', 'bg-[#F5F6F8]')
+@section('assets')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+@endsection
+@section('content')
+    <main class="main grow">
+        <section>
+            <div class="container mx-auto">
+                <div class="flex flex-col-reverse lg:flex-row justify-start gap-3 lg:gap-6 w-full">
+                    <div class="w-full lg:w-2/3 bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <h1 class="text-2xl/7 lg:text-3xl/8 font-bold">Личный кабинет соискателя</h1>
+                        <div class="subscribe mt-3 lg:mt-6">
+                            <h5 class="font-semibold text-lg lg:text-2xl">Оформите подписку</h5>
+                            <ul class="text-base lg:text-lg list-disc list-inside mt-2 lg:mt-6">
+                                <li>Первым узнаете о вакансии</li>
+                                <li>Повысит  эффективность поиска работы на 50%</li>
+                            </ul>
+                            <div class="w-full mt-4 lg:mt-9 py-3">
+                                <a href="#" class="btn-utp-green inline w-full grow py-3 px-6 text-white text-base:text-lg bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Оформить подписку</a>
+                            </div>
+                        </div>
+                        <ul class="text-base lg:text-lg list-disc list-inside mt-4 lg:mt-9">
+                            <li>Откликов на вакансии <b>– 10</b></li>
+                            <li>Откликов от работодателей <b>– 20</b></li>
+                            <li>Создано резюме <b>– 5</b></li>
+                        </ul>
+
+                        <div id="avatar-section" class="photo-button mt-5 lg:mt-9">
+                            @if ($user->photo)
+                                <!-- Показываем существующее фото -->
+                                <div id="current-avatar-wrapper" class="text-center w-60 h-60 md:w-80 md:h-80 relative">
+                                    <img src="{{ asset($user->photo->photo) . '?t=' . time() }}"
+                                         alt="Аватар"
+                                         class="w-60 h-60 md:w-80 md:h-80 border-4 border-gray-200"
+                                         id="user-avatar-preview">
+                                    <button type="button"
+                                            onclick="startChangeAvatar()"
+                                            class="absolute left-2 right-2 bottom-10 cursor-pointer inline-block mt-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+                                        Изменить
+                                    </button>
+                                </div>
+
+                                <!-- Скрываем dropZone изначально -->
+                                <div id="dropZone" class="hidden w-60 h-60 md:w-80 md:h-80 flex justify-center items-center border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-green-primary transition cursor-pointer bg-gray-50">
+                                    <div>
+                                        <div class="text-blue-primary text-lg md:text-3xl font-semibold uppercase">Фото</div>
+                                        <p class="text-gray-500 mb-3 mt-3">Перетащите изображение сюда или нажмите, чтобы выбрать</p>
+                                        <input type="file" id="imageInput" accept="image/*" class="hidden" />
+                                        <!-- Прогресс-бар -->
+                                        <div id="progressContainer" class="hidden mt-4">
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div id="progressBar" class="bg-green-primary h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+                                            </div>
+                                            <p id="progressText" class="text-xs text-gray-500 mt-1">Загрузка: 0%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <!-- Нет фото — показываем dropZone сразу -->
+                               <div id="dropZone" class="w-60 h-60 md:w-80 md:h-80 flex justify-center items-center border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-green-primary transition cursor-pointer bg-gray-50">
+                                    <div>
+                                        <div class="text-blue-primary text-lg md:text-3xl font-semibold uppercase">Фото</div>
+                                        <p class="text-gray-500 mb-3 mt-3">Перетащите изображение сюда или нажмите, чтобы выбрать</p>
+                                        <input type="file" id="imageInput" accept="image/*" class="hidden" />
+                                        <!-- Прогресс-бар -->
+                                        <div id="progressContainer" class="hidden mt-4">
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div id="progressBar" class="bg-green-primary h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+                                            </div>
+                                            <p id="progressText" class="text-xs text-gray-500 mt-1">Загрузка: 0%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Скрытый редактор Cropper.js (остаётся как есть) -->
+                                <div class="editor mt-8 hidden">
+                                    <img id="image" src="" alt="Изображение для обрезки" class="max-w-full h-96 mx-auto bg-gray-100 border border-dashed border-gray-300 rounded-lg object-contain">
+                                    <div class="controls mt-6">
+                                        <!-- Кнопки -->
+                                        <div class="flex flex-wrap justify-center gap-3">
+                                            <button id="rotateLeft" class="cursor-pointer px-5 py-2 bg-gray-400 hover:bg-gray-500 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                Повернуть влево
+                                            </button>
+                                            <button id="rotateRight" class="cursor-pointer px-5 py-2 bg-green-primary hover:bg-green-600 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                Повернуть вправо
+                                            </button>
+                                            <button id="crop" class="cursor-pointer px-5 py-2 bg-blue-primary hover:bg-blue-950 text-white font-medium rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                                                Обрезать и сохранить
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Превью результата -->
+                                <div id="result" class="result max-w-60 lg:max-w-80 mt-8 hidden text-center relative">
+                                    <img id="resultImage" alt="Обработанное изображение" class="max-w-60 max-h-60 md:max-w-80 md:max-h-80 rounded-lg border border-gray-300 shadow-sm" />
+                                    <button id="editAgain" class="absolute left-2 right-2 bottom-10 cursor-pointer inline-block mt-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+                                        Изменить изображение
+                                    </button>
+                                </div>
+                                <div id="errorMessage" class="text-red-500 text-sm mt-2 hidden"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="w-full mt-4 lg:mt-0 lg:w-1/3 py-5 px-5 lg:py-8 lg:px-7 xl:px-10 bg-white rounded-lg shadow-lg">
+                        <x-applicant-component />
+
+                        <div class="text-blue-primary profile-rate border-t border-t-[#cccccc] mt-3 pt-3 lg:mt-10 lg:pt-10 mb-1 lg:mb-4">
+                            <div class="inline lg:block text-[#53575C] text-lg lg:text-2xl w-full lg:w-[200px]">Профиль заполнен на</div>
+                            <span class="inline lg:block font-medium text-[#1A702F] text-3xl lg:text-[40px]/10 mt-1">{{ $level }}%</span>
+                            <p class="mt-2 lg:mt-4 text-lg/6 pr-10">Полностью заполненный профиль повысит эффективность на 40%</p>
+                            {{--
+                            <div class="w-full mt-4 lg:mt-9 py-3">
+                                <a href="#" class="btn-utp-green inline w-full grow py-3 px-10 text-white  text-base:text-lg bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Заполнить</a>
+                            </div>
+                            --}}
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="w-full flex flex-col gap-3 mt-3 lg:gap-6 lg:mt-6">
+                    <div class=" bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <h2 class="font-semibold text-lg md:text-2xl/6">Личная информация</h2>
+                        @if(!$applicant)
+                            <form action="{{ route('applicant.create') }}" method="post">
+                                @csrf
+                                <div class="mt-2 lg:mt-4 flex flex-col lg:flex-row gap-3 lg:gap-10">
+                                    <div class="w-full lg:w-1/2 flex flex-col gap-4 mt-2">
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Фамилия <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8">
+                                                <input type="text" name="surname" class="w-full block py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="Иванов" value="{{ old('surname') }}" />
+                                                @if ($errors->has('surname'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('surname')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Имя <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8">
+                                                <input type="text" name="name" class="block w-full py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="Иван" value="{{ old('name') }}" />
+                                                @if ($errors->has('name'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('name')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Отчество</label>
+                                            <div class="w-full md:w-5/8">
+                                                <input type="text" name="patronymic" class="block w-full py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="Иванович" value="{{ old('patronymic') }}" />
+                                                @if ($errors->has('patronymic'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('patronymic')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Регион/Город <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8 relative">
+                                                <input type="text" name="city_name" id="city_name" class="block w-full py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" list="cities-list"
+                                                       placeholder="Начните вводить город"
+                                                       value="{{ old('city_name', $applicant?->city?->name) }}"
+                                                       autocomplete="off">
+                                                <datalist id="cities-list">
+                                                    @foreach($cities as $city)
+                                                        <option value="{{ $city->name }}">
+                                                    @endforeach
+                                                </datalist>
+                                                @if ($errors->has('city_name'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('city_name')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Дата рождения <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8 relative">
+                                                <input type="text" name="birth_date" class="block birtday w-full py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="гггг-мм-дд"  value="{{ old('birth_date') }}" />
+                                                @if ($errors->has('birth_date'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('birth_date')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Пол <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8">
+                                                <div>
+                                                    <div class="flex items-center">
+                                                        <label class="relative flex items-center cursor-pointer" for="male">
+                                                            <input name="gender" type="radio" class="peer h-4 w-4 cursor-pointer appearance-none rounded-full
+                                                        border border-[#cccccc] checked:border-[#cccccc] transition-all" id="male" value="Мужской">
+                                                            <span class="absolute bg-green-primary w-2 h-2 rounded-full opacity-0 peer-checked:opacity-100
+                                                        transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                                                        </label>
+                                                        <label class="ml-2 cursor-pointer text-base/4" for="male">Мужской</label>
+                                                    </div>
+                                                    <div class="flex items-center mt-3">
+                                                        <label class="relative flex items-center cursor-pointer" for="female">
+                                                            <input name="gender" type="radio" class="peer h-4 w-4 cursor-pointer appearance-none rounded-full
+                                                        border border-[#cccccc] checked:border-[#cccccc] transition-all" id="female" value="Женский">
+                                                            <span class="absolute bg-green-primary w-2 h-2 rounded-full opacity-0 peer-checked:opacity-100
+                                                        transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
+                                                        </label>
+                                                        <label class="ml-2 cursor-pointer text-base/4" for="female">Женский</label>
+                                                    </div>
+                                                    @if ($errors->has('gender'))
+                                                        <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('gender')[0] }}</div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-full lg:w-1/2 flex flex-col gap-4 mt-2">
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Гражданство <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8 profile-fields relative border-b border-[#cccccc] ">
+                                                <select class="select block w-full new_select" name="citizenship">
+                                                    <option value="Российская Федерация" selected>Российская Федерация</option>
+                                                    <option value="Узбекистан">Узбекистан</option>
+                                                    <option value="Такжикистан">Такжикистан</option>
+                                                    <option value="Молдова">Молдова</option>
+                                                </select>
+                                                @if ($errors->has('citizenship'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('citizenship')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Образование <sup class="text-red-500">*</sup></label>
+                                            <div class="w-full md:w-5/8 profile-fields relative border-b border-[#cccccc] ">
+                                                <select class="select block w-full new_select" name="education">
+                                                    <option value="Среднее" selected>Среднее</option>
+                                                    <option value="Специальное">Специальное</option>
+                                                    <option value="Высшее">Высшее</option>
+                                                </select>
+                                                @if ($errors->has('education'))
+                                                    <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('education')[0] }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Дополнительно</label>
+                                            <div class="w-full md:w-5/8">
+                                                <div class="flex items-start mt-1 lg:mt-3">
+                                                    <label class="flex items-center cursor-pointer relative">
+                                                        <input type="checkbox" name="driving_licence" class="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="vu" value="1" />
+                                                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                    </label>
+                                                    <label class="cursor-pointer ml-2 text-base/3" for="vu">Есть водительское удостоверение</label>
+                                                </div>
+                                                <div class="flex items-start mt-1 lg:mt-3">
+                                                    <label class="flex items-center cursor-pointer relative">
+                                                        <input type="checkbox" name="married" class="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="merried" value="1" />
+                                                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                    </label>
+                                                    <label class="cursor-pointer ml-2 text-base/3" for="merried">Состою в браке</label>
+                                                </div>
+                                                <div class="flex items-start mt-1 lg:mt-3">
+                                                    <label class="flex items-center cursor-pointer relative">
+                                                        <input type="checkbox" name="children" class="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="childs" value="1" />
+                                                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                    </label>
+                                                    <label class="cursor-pointer ml-2 text-base/3" for="childs">Есть дети</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-full mt-8">
+                                    <button class="btn-utp-green inline-block  grow py-2.5 px-14 text-white text-base md:text-lg bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none" type="submit">Сохранить</button>
+                                </div>
+                            </form>
+                        @else
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-6 text-base md:text-lg">
+                                <li class="bg-gray-50 py-2 px-3"><b>Имя:</b> {{ $applicant->name }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Фамилия:</b> {{ $applicant->surname }}</li>
+                                @if($applicant->patronymic)
+                                    <li class="bg-gray-50 py-2 px-3"><b>Отчество:</b> {{ $applicant->patronymic }}</li>
+                                @endif
+                                <li class="bg-gray-50 py-2 px-3"><b>Регион/город:</b> {{ $applicant->city_name }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Дата рождения:</b> {{ $applicant->birth_date }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Пол:</b> {{ $applicant->gender }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Гражданство:</b> {{ $applicant->citizenship }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Образование:</b> {{ $applicant->education }}</li>
+                                @if($applicant->driving_licence)
+                                    <li class="bg-gray-50 py-2 px-3">Есть водительское удостоверение</li>
+                                @endif
+                                @if($applicant->married)
+                                    @if($applicant->gender == 'Мужской')
+                                        <li class="bg-gray-50 py-2 px-3">Женат</li>
+                                    @else
+                                        <li class="bg-gray-50 py-2 px-3">Замужем</li>
+                                    @endif
+                                @endif
+                                @if($applicant->children)
+                                    <li class="bg-gray-50 py-2 px-3">Есть дети</li>
+                                @endif
+                            </ul>
+                            <div class="mt-6">
+                                <a href="{{ route('applicant.edit', ['applicant' => $applicant->id]) }}" class="btn-utp-green inline-block  grow py-2.5 px-14 text-white text-base md:text-lg bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none">Изменить</a>
+                            </div>
+                        @endif
+
+                    </div>
+                    <div class=" bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <h2 class="font-semibold text-lg md:text-2xl/6">Контакты</h2>
+                        @if(!$contact)
+                        <form action="{{ route('applicant.contact.create') }}" method="post">
+                            @csrf
+                            <div class="mt-2 md:mt-4 flex flex-col md:flex-row gap-3 md:gap-10">
+                                <div class="w-full md:w-1/2 flex flex-col gap-4 mt-2">
+                                    <div class="flex flex-col md:flex-row gap-2">
+                                        <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Телефон <sup class="text-red-500">*</sup></label>
+                                        <div class="w-full md:w-5/8 relative">
+                                            <input type="text" name="phone" class="phone block py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="+7(999)888-77-66" value="{{ old('phone') }}" />
+                                            @if ($errors->has('phone'))
+                                                <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('phone')[0] }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col md:flex-row gap-2">
+                                        <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">E-mail <sup class="text-red-500">*</sup></label>
+                                        <div class="w-full md:w-5/8 relative">
+                                            <input type="email" name="email" class="block w-full md:w-5/8 py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="example@mail.com" value="{{ old('email') }}" />
+                                            @if ($errors->has('email'))
+                                                <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('email')[0] }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-1/2 flex flex-col gap-4 mt-2">
+                                    <div class="flex flex-col md:flex-row gap-2">
+                                        <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">VK</label>
+                                        <div class="w-full md:w-5/8">
+                                            <input type="text" name="vk" class="block w-full  py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="https://vk.com/my-profile" value="{{ old('vk') }}" />
+                                            <div class="flex items-start mt-2">
+                                                <label class="flex items-center cursor-pointer relative">
+                                                    <input type="checkbox" name="vk_check" class="peer h-3 w-3 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="vkc" value="1" />
+                                                    <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                </label>
+                                                <label class="cursor-pointer ml-2 text-[#53575C] text-sm/3" for="vkc">Показывать работодателям</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col md:flex-row gap-2">
+                                        <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Telegram</label>
+                                        <div class="w-full md:w-5/8">
+                                            <input type="text" name="telegram" class="block w-full  py-1 text-blue-primary bg-transparent border-b border-[#cccccc]
+                                            appearance-none focus:outline-none focus:ring-0 peer" placeholder="https://tg.me/my-profile" value="{{ old('telegram') }}" />
+                                            <div class="flex items-start mt-2">
+                                                <label class="flex items-center cursor-pointer relative">
+                                                    <input type="checkbox" name="telegram_check" class="peer h-3 w-3 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="tgc" value="1" />
+                                                    <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                </label>
+                                                <label class="cursor-pointer ml-2 text-[#53575C] text-sm/3" for="tgc">Показывать работодателям</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full mt-8">
+                                <button class="btn-utp-green inline-block  grow py-2.5 px-14 text-white text-base md:text-lg bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none" type="submit">Сохранить</button>
+                            </div>
+                        </form>
+                        @else
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-6 text-base md:text-lg">
+                                <li class="bg-gray-50 py-2 px-3"><b>Телефон:</b> {{ $contact->phone }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>E-mail:</b> {{ $contact->email }}</li>
+                                @if($contact->vk)
+                                    <li class="bg-gray-50 py-2 px-3">
+                                        <b>VK:</b> {{ $contact->vk }}
+                                        @if($contact->vk_check)
+                                            <br/><small>Показывать работодателю</small>
+                                        @endif
+                                    </li>
+                                @endif
+                                @if($contact->telegram)
+                                    <li class="bg-gray-50 py-2 px-3">
+                                        <b>Telegram:</b> {{ $contact->telegram }}
+                                        @if($contact->telegram_check)
+                                            <br/><small>Показывать работодателю</small>
+                                        @endif
+                                    </li>
+                                @endif
+                            </ul>
+                            <div class="mt-6">
+                                <a href="{{ route('applicant.contact.edit', ['applicant' => $applicant->id]) }}" class="btn-utp-green inline-block  grow py-2.5 px-14 text-white text-base md:text-lg bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none">Изменить</a>
+                            </div>
+                        @endif
+                    </div>
+                    <div class=" bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <h2 class="font-semibold text-lg md:text-2xl/6">Информация о прошлых местах работы</h2>
+                        <div class="mt-0">
+                            @if(count($experiences))
+                                @foreach($experiences as $experience)
+                                    <div class="relative md:mt-5 pt-1 pb-3 md:pb-8 last:border-0 border-b border-b-[#cccccc] pr-10">
+                                        <dl class="">
+                                            <dt class="text-lg md:text-xl">Должность: <b>{{ $experience->position }}</b></dt>
+                                            <dd class="mt-1 md:mt-2">Время работы: <b>{{ $experience->period_start }} - {{ $experience->present ? 'по настоящее время': $experience->period_end}}</b></dd>
+                                            <dd class="mt-1 md:mt-2">Город: <b>{{ $experience->city }}</b></dd>
+                                            <dd class="mt-1 md:mt-2">Организация: <b>{{ $experience->organization }}</b></dd>
+                                        </dl>
+                                        <h3 class="my-2 md:my-4 font-semibold text-lg md:text-xl">Обязанности и достижения:</h3>
+                                        <p class="text-base md:text-lg">{{ $experience->description }}</p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="mt-2">Места работы не найдены</p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="profile-forms-item bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <h2 class="font-semibold text-lg md:text-2xl/6">Список образовательных учреждения</h2>
+                        @if(count($educations))
+                            <div class="mt-0">
+                                @foreach($educations as $education)
+                                    <div class="mt-2 md:mt-5 pt-1 pb-3 md:pb-8 last:border-0 border-b border-b-[#cccccc]">
+                                        <dl class="">
+                                            <dt class="text-lg md:text-xl">Название учреждения: <b>{{ $education->institution }}</b></dt>
+                                            <dd class="mt-1 md:mt-2">Город: <b>{{ $education->city }}</b></dd>
+                                            @if($education->faculty)
+                                                <dd class="mt-1 md:mt-2">Факультет: <b>{{ $education->faculty }}</b></dd>
+                                            @endif
+                                            @if($education->specialization)
+                                                <dd class="mt-1 md:mt-2">Специализация: <b>{{ $education->specialization }}</b></dd>
+                                            @endif
+                                            <dd class="mt-1 md:mt-2">Период обучения: <b>{{  $education->period_start }} - {{  $education->present ? 'по настоящее время':  $education->period_end}}</b></dd>
+                                        </dl>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="mt-2">Учебных заведений не найдено</p>
+                        @endif
+                    </div>
+                    <div class="profile-forms-item bg-white rounded-lg shadow-lg py-5 px-5 lg:py-10 lg:px-10">
+                        <div class="flex flex-row justify-between gap-3">
+                            <h2 class="font-semibold text-lg md:text-2xl/6">Список резюме</h2>
+                            <div class="">
+                                <a href="#" title="Добавить" class="inline-block grow py-0 md:py-3 px-0 md:px-12 text-green-primary md:text-white text-base md:text-lg bg-transparent md:bg-green-primary border-none md:border md:border-solid border-green-primary rounded-full  hover:border-transparent md:hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out"><span class="hidden md:inline">Добавить</span><span class="inline md:hidden text-3xl/5 font-bold">+</span></a>
+                            </div>
+                        </div>
+                        <div class="mt-0">
+                            <div id="tabs">
+                                <ul class="tabs-nav flex flex-row gap-10 md:gap-20 font-semibold text-base md:text-xl text-[#53575C]">
+                                    <li><a class="pb-2 border-b border-b-transparent" href="#tab-1">Активные резюме</a></li>
+                                    <li><a class="pb-2 border-b border-b-transparent" href="#tab-2">Архив</a></li>
+                                </ul>
+                                <div class="tabs-items mt-6">
+                                    <div class="tabs-item" id="tab-1">
+                                        <div class="w-full overflow-x-auto">
+                                            <table class="min-w-full table-auto border-separate border-spacing-0 bg-white text-blue-primary">
+                                                <thead class="font-semibold text-base md:text-lg">
+                                                <tr>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Должность</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">З/п, руб</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Статус</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Дата создания</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-base md:text-lg divide-y divide-gray-300">
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-green-800 bg-green-100 rounded-full">Активно</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300 text-gray-800">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300 text-right">
+                                                        <div class="flex justify-around space-x-3 items-center">
+                                                            <a href="#" class="text-gray-500 hover:text-green-primary transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M15.7279 9.57628L14.3137 8.16207L5 17.4758V18.89H6.41421L15.7279 9.57628ZM17.1421 8.16207L18.5563 6.74786L17.1421 5.33364L15.7279 6.74786L17.1421 8.16207ZM7.24264 20.89H3V16.6473L16.435 3.21232C16.8256 2.8218 17.4587 2.8218 17.8492 3.21232L20.6777 6.04075C21.0682 6.43127 21.0682 7.06444 20.6777 7.45496L7.24264 20.89Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-yellow-600 transition">
+                                                                <svg width="26" height="16" viewBox="0 0 26 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M25.7761 8.38456C23.8887 10.3705 22.2373 11.9505 20.2211 13.4128C16.6467 16.0073 12.6524 16.8518 8.38714 15.0143C5.12937 13.6154 2.40959 11.4731 0.353416 8.67654C-0.0145506 8.1776 -0.163641 7.98233 0.239219 7.47107C3.13029 3.79861 6.64691 0.865948 11.5732 0.121848C14.8608 -0.375245 17.8705 0.702099 20.3917 2.59684C22.3584 4.07519 23.9921 5.64654 25.8129 7.55607C26.0603 7.79692 26.0724 8.07596 25.7761 8.38456ZM2.35503 7.5222C2.24037 7.65016 2.1769 7.81388 2.17621 7.98349C2.17551 8.1531 2.23762 8.31731 2.35122 8.44616C4.26147 10.5984 6.42042 12.3632 9.08627 13.4972C10.9775 14.2979 12.9531 14.5875 14.9801 14.0516C18.4694 13.1276 21.0985 11.0148 23.4268 8.42953C23.5335 8.31094 23.5927 8.15898 23.5934 8.0015C23.5941 7.84402 23.5363 7.69157 23.4306 7.57209C21.5102 5.40939 19.3475 3.62984 16.6677 2.48782C13.9878 1.34579 11.334 1.44066 8.6961 2.66152C6.21931 3.80539 4.19549 5.48208 2.35503 7.52404V7.5222Z" fill="currentColor"/>
+                                                                    <path d="M12.8313 12.9195C9.98587 12.8992 7.76412 10.6786 7.80726 7.89804C7.84976 5.17912 10.1096 3.04476 12.9252 3.06509C15.7706 3.08541 17.9923 5.30601 17.9485 8.08653C17.9067 10.8055 15.6468 12.9398 12.8313 12.9195ZM12.8598 11.2976C14.6996 11.3093 16.2679 9.80264 16.28 8.01015C16.2921 6.21765 14.7415 4.69866 12.8966 4.68695C11.0517 4.67525 9.48848 6.18193 9.47643 7.97442C9.46438 9.76691 11.0149 11.2859 12.8598 11.2976Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-red-600 transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M20 3L22 7V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V7.00353L4 3H20ZM20 9H4V19H20V9ZM13 10V14H16L12 18L8 14H11V10H13ZM18.7639 5H5.23656L4.23744 7H19.7639L18.7639 5Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь МСР</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-yellow-800 bg-yellow-100 rounded-full">На модерации</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <div class="flex justify-around space-x-3 items-center">
+                                                            <a href="#" class="text-gray-500 hover:text-green-primary transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M15.7279 9.57628L14.3137 8.16207L5 17.4758V18.89H6.41421L15.7279 9.57628ZM17.1421 8.16207L18.5563 6.74786L17.1421 5.33364L15.7279 6.74786L17.1421 8.16207ZM7.24264 20.89H3V16.6473L16.435 3.21232C16.8256 2.8218 17.4587 2.8218 17.8492 3.21232L20.6777 6.04075C21.0682 6.43127 21.0682 7.06444 20.6777 7.45496L7.24264 20.89Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-yellow-600 transition">
+                                                                <svg width="26" height="16" viewBox="0 0 26 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M25.7761 8.38456C23.8887 10.3705 22.2373 11.9505 20.2211 13.4128C16.6467 16.0073 12.6524 16.8518 8.38714 15.0143C5.12937 13.6154 2.40959 11.4731 0.353416 8.67654C-0.0145506 8.1776 -0.163641 7.98233 0.239219 7.47107C3.13029 3.79861 6.64691 0.865948 11.5732 0.121848C14.8608 -0.375245 17.8705 0.702099 20.3917 2.59684C22.3584 4.07519 23.9921 5.64654 25.8129 7.55607C26.0603 7.79692 26.0724 8.07596 25.7761 8.38456ZM2.35503 7.5222C2.24037 7.65016 2.1769 7.81388 2.17621 7.98349C2.17551 8.1531 2.23762 8.31731 2.35122 8.44616C4.26147 10.5984 6.42042 12.3632 9.08627 13.4972C10.9775 14.2979 12.9531 14.5875 14.9801 14.0516C18.4694 13.1276 21.0985 11.0148 23.4268 8.42953C23.5335 8.31094 23.5927 8.15898 23.5934 8.0015C23.5941 7.84402 23.5363 7.69157 23.4306 7.57209C21.5102 5.40939 19.3475 3.62984 16.6677 2.48782C13.9878 1.34579 11.334 1.44066 8.6961 2.66152C6.21931 3.80539 4.19549 5.48208 2.35503 7.52404V7.5222Z" fill="currentColor"/>
+                                                                    <path d="M12.8313 12.9195C9.98587 12.8992 7.76412 10.6786 7.80726 7.89804C7.84976 5.17912 10.1096 3.04476 12.9252 3.06509C15.7706 3.08541 17.9923 5.30601 17.9485 8.08653C17.9067 10.8055 15.6468 12.9398 12.8313 12.9195ZM12.8598 11.2976C14.6996 11.3093 16.2679 9.80264 16.28 8.01015C16.2921 6.21765 14.7415 4.69866 12.8966 4.68695C11.0517 4.67525 9.48848 6.18193 9.47643 7.97442C9.46438 9.76691 11.0149 11.2859 12.8598 11.2976Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-red-600 transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M20 3L22 7V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V7.00353L4 3H20ZM20 9H4V19H20V9ZM13 10V14H16L12 18L8 14H11V10H13ZM18.7639 5H5.23656L4.23744 7H19.7639L18.7639 5Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь-сантехник </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-green-800 bg-green-100 rounded-full">Активно</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300 ">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <div class="flex justify-around space-x-3 items-center">
+                                                            <a href="#" class="text-gray-500 hover:text-green-primary transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M15.7279 9.57628L14.3137 8.16207L5 17.4758V18.89H6.41421L15.7279 9.57628ZM17.1421 8.16207L18.5563 6.74786L17.1421 5.33364L15.7279 6.74786L17.1421 8.16207ZM7.24264 20.89H3V16.6473L16.435 3.21232C16.8256 2.8218 17.4587 2.8218 17.8492 3.21232L20.6777 6.04075C21.0682 6.43127 21.0682 7.06444 20.6777 7.45496L7.24264 20.89Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-yellow-600 transition">
+                                                                <svg width="26" height="16" viewBox="0 0 26 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M25.7761 8.38456C23.8887 10.3705 22.2373 11.9505 20.2211 13.4128C16.6467 16.0073 12.6524 16.8518 8.38714 15.0143C5.12937 13.6154 2.40959 11.4731 0.353416 8.67654C-0.0145506 8.1776 -0.163641 7.98233 0.239219 7.47107C3.13029 3.79861 6.64691 0.865948 11.5732 0.121848C14.8608 -0.375245 17.8705 0.702099 20.3917 2.59684C22.3584 4.07519 23.9921 5.64654 25.8129 7.55607C26.0603 7.79692 26.0724 8.07596 25.7761 8.38456ZM2.35503 7.5222C2.24037 7.65016 2.1769 7.81388 2.17621 7.98349C2.17551 8.1531 2.23762 8.31731 2.35122 8.44616C4.26147 10.5984 6.42042 12.3632 9.08627 13.4972C10.9775 14.2979 12.9531 14.5875 14.9801 14.0516C18.4694 13.1276 21.0985 11.0148 23.4268 8.42953C23.5335 8.31094 23.5927 8.15898 23.5934 8.0015C23.5941 7.84402 23.5363 7.69157 23.4306 7.57209C21.5102 5.40939 19.3475 3.62984 16.6677 2.48782C13.9878 1.34579 11.334 1.44066 8.6961 2.66152C6.21931 3.80539 4.19549 5.48208 2.35503 7.52404V7.5222Z" fill="currentColor"/>
+                                                                    <path d="M12.8313 12.9195C9.98587 12.8992 7.76412 10.6786 7.80726 7.89804C7.84976 5.17912 10.1096 3.04476 12.9252 3.06509C15.7706 3.08541 17.9923 5.30601 17.9485 8.08653C17.9067 10.8055 15.6468 12.9398 12.8313 12.9195ZM12.8598 11.2976C14.6996 11.3093 16.2679 9.80264 16.28 8.01015C16.2921 6.21765 14.7415 4.69866 12.8966 4.68695C11.0517 4.67525 9.48848 6.18193 9.47643 7.97442C9.46438 9.76691 11.0149 11.2859 12.8598 11.2976Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-red-600 transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M20 3L22 7V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V7.00353L4 3H20ZM20 9H4V19H20V9ZM13 10V14H16L12 18L8 14H11V10H13ZM18.7639 5H5.23656L4.23744 7H19.7639L18.7639 5Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2.5 font-medium text-green-800 bg-green-100 rounded-full">Активно</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <div class="flex justify-around space-x-3 items-center">
+                                                            <a href="#" class="text-gray-500 hover:text-green-primary transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M15.7279 9.57628L14.3137 8.16207L5 17.4758V18.89H6.41421L15.7279 9.57628ZM17.1421 8.16207L18.5563 6.74786L17.1421 5.33364L15.7279 6.74786L17.1421 8.16207ZM7.24264 20.89H3V16.6473L16.435 3.21232C16.8256 2.8218 17.4587 2.8218 17.8492 3.21232L20.6777 6.04075C21.0682 6.43127 21.0682 7.06444 20.6777 7.45496L7.24264 20.89Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-yellow-600 transition">
+                                                                <svg width="26" height="16" viewBox="0 0 26 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M25.7761 8.38456C23.8887 10.3705 22.2373 11.9505 20.2211 13.4128C16.6467 16.0073 12.6524 16.8518 8.38714 15.0143C5.12937 13.6154 2.40959 11.4731 0.353416 8.67654C-0.0145506 8.1776 -0.163641 7.98233 0.239219 7.47107C3.13029 3.79861 6.64691 0.865948 11.5732 0.121848C14.8608 -0.375245 17.8705 0.702099 20.3917 2.59684C22.3584 4.07519 23.9921 5.64654 25.8129 7.55607C26.0603 7.79692 26.0724 8.07596 25.7761 8.38456ZM2.35503 7.5222C2.24037 7.65016 2.1769 7.81388 2.17621 7.98349C2.17551 8.1531 2.23762 8.31731 2.35122 8.44616C4.26147 10.5984 6.42042 12.3632 9.08627 13.4972C10.9775 14.2979 12.9531 14.5875 14.9801 14.0516C18.4694 13.1276 21.0985 11.0148 23.4268 8.42953C23.5335 8.31094 23.5927 8.15898 23.5934 8.0015C23.5941 7.84402 23.5363 7.69157 23.4306 7.57209C21.5102 5.40939 19.3475 3.62984 16.6677 2.48782C13.9878 1.34579 11.334 1.44066 8.6961 2.66152C6.21931 3.80539 4.19549 5.48208 2.35503 7.52404V7.5222Z" fill="currentColor"/>
+                                                                    <path d="M12.8313 12.9195C9.98587 12.8992 7.76412 10.6786 7.80726 7.89804C7.84976 5.17912 10.1096 3.04476 12.9252 3.06509C15.7706 3.08541 17.9923 5.30601 17.9485 8.08653C17.9067 10.8055 15.6468 12.9398 12.8313 12.9195ZM12.8598 11.2976C14.6996 11.3093 16.2679 9.80264 16.28 8.01015C16.2921 6.21765 14.7415 4.69866 12.8966 4.68695C11.0517 4.67525 9.48848 6.18193 9.47643 7.97442C9.46438 9.76691 11.0149 11.2859 12.8598 11.2976Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                            <a href="#" class="text-gray-500 hover:text-red-600 transition">
+                                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="M20 3L22 7V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V7.00353L4 3H20ZM20 9H4V19H20V9ZM13 10V14H16L12 18L8 14H11V10H13ZM18.7639 5H5.23656L4.23744 7H19.7639L18.7639 5Z" fill="currentColor"/>
+                                                                </svg>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="tabs-item" id="tab-2">
+                                        <div class="w-full overflow-x-auto">
+                                            <table class="min-w-full table-auto border-separate border-spacing-0 bg-white text-blue-primary">
+                                                <thead class="font-semibold text-base md:text-lg">
+                                                <tr>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Должность</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">З/п, руб</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Статус</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300">Дата создания</th>
+                                                    <th class="text-left px-4 py-3 border border-gray-300"></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody class="text-base md:text-lg divide-y divide-gray-300">
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Автослесарь</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-blue-800 bg-blue-100 rounded-full">Архив</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300 text-gray-800">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <a href="#">
+                                                            <span class="inline-flex px-2 py-2 font-medium text-red-800 bg-red-100 rounded-full">Восстановить</span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь ремонтник</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-blue-800 bg-blue-100 rounded-full">Архив</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <a href="#">
+                                                            <span class="inline-flex px-2 py-2 font-medium text-red-800 bg-red-100 rounded-full">Восстановить</span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь-универсал</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2 font-medium text-blue-800 bg-blue-100 rounded-full">Архив</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300 ">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <a href="#">
+                                                            <span class="inline-flex px-2 py-2 font-medium text-red-800 bg-red-100 rounded-full">Восстановить</span>
+                                                        </a>
+
+                                                    </td>
+                                                </tr>
+                                                <tr class="hover:bg-gray-50">
+                                                    <td class="px-4 py-3 border border-gray-300">Слесарь-сварщик</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="diviger">65000</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <span class="inline-flex px-2 py-2.5 font-medium text-blue-800 bg-blue-100 rounded-full">Архив</span>
+                                                    </td>
+                                                    <td class="px-4 py-3 border border-gray-300">04.05.2020</td>
+                                                    <td class="px-4 py-3 border border-gray-300">
+                                                        <a href="#">
+                                                            <span class="inline-flex px-2 py-2 font-medium text-red-800 bg-red-100 rounded-full">Восстановить</span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </main>
+@endsection
+@push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        let cropper;
+
+        const dropZone = document.getElementById('dropZone');
+        const imageInput = document.getElementById('imageInput');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        // Показать прогресс (симуляция — файл читается быстро, но добавим плавность)
+        function showProgress(callback) {
+            progressContainer.classList.remove('hidden');
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 5;
+                if (width >= 100) {
+                    width = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressContainer.classList.add('hidden');
+                        setTimeout(() => {
+                            if (callback) callback();
+                        }, 200);
+                    }, 300);
+                }
+                progressBar.style.width = width + '%';
+                progressText.textContent = `Загрузка: ${width}%`;
+            }, 50);
+        }
+
+        // Функция обработки файла
+        function handleFile(file) {
+            // Проверка размера файла (10 КБ – 5 МБ)
+            const MIN_FILE_SIZE = 10 * 1024;
+            const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+            if (file.size < MIN_FILE_SIZE) {
+                showError('Размер файла слишком мал. Минимум 10 КБ.');
+                return;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                showError('Размер файла слишком велик. Максимум 5 МБ.');
+                return;
+            }
+
+            showProgress(() => {
+                const imageUrl = URL.createObjectURL(file);
+                const image = document.getElementById('image');
+
+                const img = new Image();
+                img.onload = function () {
+                    const { width, height } = img;
+
+                    if (width < 300 || height < 300) {
+                        showError('Изображение слишком маленькое. Минимум 300×300 пикселей.');
+                        URL.revokeObjectURL(imageUrl);
+                        return;
+                    }
+                    if (width > 1500 || height > 1500) {
+                        showError('Изображение слишком большое. Максимум 1500×1500 пикселей.');
+                        URL.revokeObjectURL(imageUrl);
+                        return;
+                    }
+
+                    // Показать редактор
+                    dropZone.classList.add('hidden');
+                    document.querySelector('.editor').classList.remove('hidden');
+                    image.src = imageUrl;
+
+                    if (cropper) cropper.destroy();
+
+                    image.onload = function () {
+                        cropper = new Cropper(image, {
+                            aspectRatio: 1, // можно оставить или изменить
+                            viewMode: 1,
+                            autoCropArea: 0.9,
+                            movable: true,
+                            rotatable: true,
+                            scalable: true,
+                            zoomable: false,
+                            background: true,
+                            guides: true,
+                            center: true,
+
+                            // Ограничение минимального размера рамки обрезки
+                            minCropBoxWidth: 400,
+                            minCropBoxHeight: 400,
+
+                            // Ограничение максимального размера рамки обрезки
+                            maxCropBoxWidth: 500,
+                            maxCropBoxHeight: 500,
+
+                            // Опционально: ограничить минимальный размер canvas (редко нужно)
+                            minCanvasWidth: 400,
+                            minCanvasHeight: 400,
+                        });
+                    };
+                };
+                img.onerror = () => showError('Не удалось загрузить изображение.');
+                img.src = imageUrl;
+            });
+
+            function showError(message) {
+                const errorEl = document.getElementById('errorMessage');
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
+                setTimeout(() => errorEl.classList.add('hidden'), 5000);
+            }
+        }
+
+        // Клик по зоне
+        dropZone.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        // Выбор файла через input
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        // Drag & Drop события
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('bg-blue-50', 'border-blue-400');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('bg-blue-50', 'border-blue-400');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const file = e.dataTransfer.files?.[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            } else {
+                alert('Пожалуйста, перетащите изображение.');
+            }
+        });
+
+        // Поворот
+        document.getElementById('rotateLeft').addEventListener('click', () => {
+            if (cropper) cropper.rotate(-90);
+        });
+
+        document.getElementById('rotateRight').addEventListener('click', () => {
+            if (cropper) cropper.rotate(90);
+        });
+
+        // Обрезка и закрытие редактора
+        document.getElementById('crop').addEventListener('click', () => {
+            if (!cropper) return;
+
+            const canvas = cropper.getCroppedCanvas({
+                width: 800,
+                height: 800,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            if (canvas) {
+                const resultImage = document.getElementById('resultImage');
+                //resultImage.src = canvas.toDataURL('image/jpeg', 0.9);
+
+                canvas.toBlob(function(blob) {
+                    const formData = new FormData();
+                    formData.append('image', blob, 'photo.webp');
+
+                    fetch('/media', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin',  // ← КРИТИЧЕСКИ ВАЖНО: отправлять куки
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                        // Не нужен Content-Type — браузер сам установит
+                      /*  headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }*/
+                    })
+                        .then(response => response.text().then(text => {
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error('Invalid JSON:', text);
+                                throw e;
+                            }
+                        }))
+                        .then(data => {
+                            console.log('Фото загружено:', data.url);
+                            // 1. Обновляем изображение в #current-avatar-wrapper
+                            const avatarImg = document.getElementById('user-avatar-preview');
+                            if (avatarImg) {
+                                avatarImg.src = data.url + '?t=' + Date.now();
+                            }
+
+                            // 2. Показываем блок с аватаром и кнопкой "Изменить"
+                            const currentWrapper = document.getElementById('current-avatar-wrapper');
+                            if (currentWrapper) {
+                                currentWrapper.style.display = 'block'; // или .classList.remove('hidden')
+                            }
+
+                            // 3. Скрываем окно результата (если оно открылось)
+                            const result = document.getElementById('result');
+                            if (result) {
+                                result.classList.add('hidden');
+                            }
+
+                            // 4. Скрываем редактор (если нужно)
+                            const editor = document.querySelector('.editor');
+                            if (editor) {
+                                editor.classList.add('hidden');
+                            }
+
+                            // 5. Очищаем input
+                            const imageInput = document.getElementById('imageInput');
+                            if (imageInput) {
+                                imageInput.value = '';
+                            }
+
+                            // После успешной загрузки
+                            //document.getElementById('resultImage').classList.add('hidden');
+
+                            // Обновляем аватар в интерфейсе
+                            if (avatarImg) {
+                                avatarImg.src = data.url + '?t=' + Date.now(); // ?t= — обход кеша
+                            } else {
+                                const wrapper = document.createElement('div');
+                                wrapper.id = 'current-avatar-wrapper';
+                                wrapper.className = 'text-center w-60 h-60 md:w-80 md:h-80 relative';
+                                wrapper.innerHTML = `
+                                    <img src="${data.url}?t=${Date.now()}"
+                                    alt="Аватар"
+                                    class="w-60 h-60 md:w-80 md:h-80 border-4 border-gray-200"
+                                    id="user-avatar-preview">
+                                    <button type="button" onclick="startChangeAvatar()"
+                                    class="absolute left-2 right-2 bottom-10 cursor-pointer inline-block mt-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg text-sm transition">
+                                    Изменить
+                                    </button>
+                                `;
+                                document.getElementById('avatar-section').prepend(wrapper);
+                            }
+
+                            // Скрываем dropZone после загрузки
+                            //document.getElementById('dropZone').classList.add('hidden');
+                        })
+                        .catch(console.error);
+                }, 'image/webp', 0.9);
+                document.getElementById('result').classList.remove('hidden');
+                document.querySelector('.editor').classList.add('hidden');
+            }
+            cropper.destroy();
+            cropper = null;
+        });
+
+        // Выбор соотношения сторон
+        /*document.getElementById('aspectRatioSelect').addEventListener('change', (e) => {
+          const ratio = e.target.value;
+          let aspectRatio = 1;
+
+          switch (ratio) {
+            case '1': aspectRatio = 1; break;
+            case '4/3': aspectRatio = 4 / 3; break;
+            case '16/9': aspectRatio = 16 / 9; break;
+            case 'free': aspectRatio = NaN; break;
+          }
+
+          if (cropper) {
+            cropper.setAspectRatio(aspectRatio);
+          }
+        });*/
+
+        document.getElementById('editAgain').addEventListener('click', () => {
+            document.getElementById('result').classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            dropZone.value = ''; // сброс
+        });
+
+
+
+    </script>
+    <script>
+        function startChangeAvatar() {
+            // Скрываем текущее фото
+            document.getElementById('current-avatar-wrapper').style.display = 'none';
+
+            // Показываем зону загрузки
+            const dropZone = document.getElementById('dropZone');
+            dropZone.classList.remove('hidden');
+
+            // Очищаем предыдущий выбор файла (если был)
+            document.getElementById('imageInput').value = '';
+        }
+    </script>
+
+    <script>
+        document.getElementById('city_name').addEventListener('input', function () {
+            const query = this.value;
+            if (query.length < 2) return;
+
+            fetch('{{ route("cities.search") }}?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    const datalist = document.getElementById('cities-list');
+                    datalist.innerHTML = ''; // Очистим старые варианты
+
+                    data.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.name;
+                        datalist.appendChild(option);
+                    });
+                })
+                .catch(err => console.warn('Ошибка загрузки городов:', err));
+        });
+    </script>
+
+@endpush
+
