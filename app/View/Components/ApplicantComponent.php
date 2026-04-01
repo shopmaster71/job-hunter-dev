@@ -32,6 +32,7 @@ class ApplicantComponent extends Component
         }else{
             $messagesCount = 0;
         }
+
         return view('components.applicant-component', compact('applicant', 'messagesCount'));
     }
 }

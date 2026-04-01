@@ -13,6 +13,15 @@
     @yield('assets')
     <link href="{{ asset('assets/main.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/style.css') }}" rel="stylesheet">
+    <style>
+        .favourites-link svg{
+            fill: white;
+        }
+
+        .favourites-link.active svg {
+            fill: #27A746;
+        }
+    </style>
 </head>
 <body class="@yield('body_class') text-blue-primary">
 <div class="wrapper flex flex-col h-full">

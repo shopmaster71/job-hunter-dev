@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Agency;
 use App\Models\Applicant;
 use App\Models\ApplicantContact;
 use App\Models\Employer;
@@ -59,6 +60,13 @@ class AppServiceProvider extends ServiceProvider
          */
         Gate::define('update-hr', function (User $user, HeadHunter $hr) {
             return $user->id === $hr->user_id;
+        });
+
+        /**
+         * @noinspection PhpParamsInspection
+         */
+        Gate::define('update-agency', function (User $user, Agency $agency) {
+            return $user->id === $agency->user_id;
         });
 
     }

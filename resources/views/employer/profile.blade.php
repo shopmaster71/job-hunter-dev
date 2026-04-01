@@ -2,6 +2,17 @@
 @section('title',  $employer->title)
 @section('description', $employer->title)
 @section('body_class', 'bg-white')
+@section('assets')
+    <style>
+        .favourites-black-link svg{
+            fill: #0B2641;
+        }
+
+        .favourites-black-link.active svg {
+            fill: #27A746;
+        }
+    </style>
+@endsection
 @section('content')
     <main class="main">
         <section class="py-3 md:py-0 overflow-hidden">
@@ -231,16 +242,24 @@
                                                 <span class="">По договорённости</span>
                                             @endif
                                         </p>
-                                        <a href="#" class="favourites-link"><span></span></a>
+                                        @if(auth()->user()?->role == 1)
+                                            <a href="{{ route('favorite.toggle', ['vacancy' => $vacancy->id]) }}"
+                                            class="favourites-black-link {{ $vacancy->is_favorited ? 'active' : '' }}">
+                                                <svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M16.7153 0C20.217 0 23.0556 2.88194 23.0556 6.91667C23.0556 14.9861 14.4097 19.5972 11.5278 21.3264C8.64583 19.5972 0 14.9861 0 6.91667C0 2.88194 2.88194 0 6.34028 0C8.48441 0 10.375 1.15278 11.5278 2.30556C12.6806 1.15278 14.5711 0 16.7153 0ZM12.6044 17.9877C13.6206 17.3476 14.5365 16.7101 15.3952 16.027C18.8291 13.295 20.75 10.3099 20.75 6.91667C20.75 4.19699 18.9782 2.30556 16.7153 2.30556C15.475 2.30556 14.1322 2.96161 13.158 3.93583L11.5278 5.56611L9.89752 3.93583C8.92328 2.96161 7.58055 2.30556 6.34028 2.30556C4.10281 2.30556 2.30556 4.21513 2.30556 6.91667C2.30556 10.3099 4.22639 13.295 7.66037 16.027C8.51903 16.7101 9.43491 17.3476 10.4512 17.9877C10.7953 18.2046 11.1371 18.4132 11.5278 18.6464C11.9185 18.4132 12.2603 18.2046 12.6044 17.9877Z"
+                                                    class="fill-current"/>
+                                                </svg>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                                 <p class="text-base/5 my-3 pr-0 sm:pr-11">{{ $vacancy->charge }}</p>
-                                <p class="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-6 pr-0 sm:pr-11">
+                                <p class="flex flex-col sm:flex-row justify-between items-start gap-1 sm:gap-6 @if(auth()->user()?->role == 1) pr-0 sm:pr-11 @endif">
                                     <span class="text-lg">{{ $vacancy->city_name }}, {{ $vacancy->address }}</span>
                                     <span class="text-sm text-[#53575C]">{{ $vacancy->publishedAtFormatted }}</span>
                                 </p>
                                 <div class="mt-6 mb-3">
-                                    <a href="#" class="btn-utp-green inline-block grow py-2.5 px-10 text-white text-base/6 bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none">Подробнее</a>
+                                    <a href="{{ route('vacancy.show', ['slug' => $vacancy->slug]) }}" class="btn-utp-green inline-block grow py-2.5 px-10 text-white text-base/6 bg-green-primary border border-solid border-green-primary rounded-3xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out outline-none">Подробнее</a>
                                 </div>
                             </div>
                                 @endforeach

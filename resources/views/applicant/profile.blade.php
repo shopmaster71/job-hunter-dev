@@ -110,15 +110,31 @@
                         <div>
                             <label class="mb-2" for="email">E-mail<sup class="text-red-500">*</sup></label>
                             <input type="email" name="email" id="email" class="block w-full outline-none border border-[#cccccc] rounded-lg px-3 py-3 text-[#8F8F8F]" placeholder="example@mail.ru" />
+                            @if ($errors->has('email'))
+                                <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('email')[0] }}</div>
+                            @endif
                         </div>
                         <div>
                             <label class="mb-2" for="phone">Телефон</label>
                             <input type="text" name="phone" id="phone" class="phone block w-full outline-none border border-[#cccccc] rounded-lg px-3 py-3 text-[#8F8F8F]" placeholder="+7(000) 000-00-00" />
+                            @if ($errors->has('phone'))
+                                <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('phone')[0] }}</div>
+                            @endif
                         </div>
+                    </div>
+                    <div class="w-full mt-2 sm:mt-4">
+                        <label class="mb-2" for="theme">Тема <sup class="text-red-500">*</sup></label>
+                        <input type="text" name="theme" id="theme" class="block w-full outline-none border border-[#cccccc] rounded-lg px-3 py-3 text-[#8F8F8F]" placeholder="Тема сообщения" />
+                        @if ($errors->has('theme'))
+                            <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('theme')[0] }}</div>
+                        @endif
                     </div>
                     <div class="w-full mt-2 mb-2 sm:mt-4">
                         <label class="mb-2" for="message">Сообщение <sup class="text-red-500">*</sup></label>
                         <textarea name="message" rows="5" class="block w-full outline-none border border-[#cccccc] rounded-lg px-3 py-3 text-[#8F8F8F]" id="message">Сообщение </textarea>
+                        @if ($errors->has('message'))
+                            <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('message')[0] }}</div>
+                        @endif
                     </div>
                     <x-yandex-captcha />
                     <div class="mt-3">

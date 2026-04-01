@@ -1,6 +1,6 @@
 <ul class="flex flex-row w-full flex-wrap lg:flex-col gap-5">
     <li class="">
-        <a href="{{ $employer ? route('employer.profile', ['slug' => $employer->slug]) : '#' }}" class="group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
+        <a href="{{ isset($employer) ? route('employer.profile', ['slug' => $employer->slug]) : '#' }}" class="group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="group hover:opacity-75">
                 <path d="M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z" fill="#0B2641"/>
             </svg>
@@ -17,21 +17,35 @@
     </li>
 
     <li>
-        <a href="{{ route('employer.vacancies.index') }}" class="group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
+        <a href="{{ isset($employer) ? route('employer.vacancies.index') : '#' }}" class="group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="group hover:opacity-75">
                 <path d="M21.0082 3C21.556 3 22 3.44495 22 3.9934V20.0066C22 20.5552 21.5447 21 21.0082 21H2.9918C2.44405 21 2 20.5551 2 20.0066V3.9934C2 3.44476 2.45531 3 2.9918 3H21.0082ZM20 5H4V19H20V5ZM18 15V17H6V15H18ZM12 7V13H6V7H12ZM18 11V13H14V11H18ZM10 9H8V11H10V9ZM18 7V9H14V7H18Z" fill="#0B2641"/>
             </svg>
             <span class="text-base lg:text-lg font-medium ml-2">Вакансии</span>
         </a>
     </li>
+    <li>
+        <a href="{{ isset($employer) ? route('employer.vacancy.archive') : '#' }}" class="group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
+            <svg  width="24" height="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <g data-name="Layer 9" id="Layer_9">
+                    <path d="M30.75,14.93,27.54,8.18V4a3,3,0,0,0-3-3H9.16a3,3,0,0,0-3,3V8.18L2.95,14.93s0,.05,0,.08v0a1,1,0,0,0-.06.3s0,0,0,0V29.22a1,1,0,0,0,1,1h26a1,1,0,0,0,1-1V15.4s0,0,0,0A1,1,0,0,0,30.75,14.93Zm-2.47-.53h-.74V12.84ZM9.16,3H24.54a1,1,0,0,1,1,1V14.4H22.88a1,1,0,0,0-1,1v2.8H11.82V15.4a1,1,0,0,0-1-1H8.16V4A1,1,0,0,1,9.16,3Zm-3,11.38H5.41l.75-1.57ZM28.85,28.22h-24V16.4h5v1.8a2,2,0,0,0,2,2H21.88a2,2,0,0,0,2-2V16.4h5Z"/>
+                    <path d="M11,11.16H22.69a1,1,0,1,0,0-2H11a1,1,0,1,0,0,2Z"/>
+                    <path d="M11,7.32H22.69a1,1,0,0,0,0-2H11a1,1,0,0,0,0,2Z"/>
+                </g>
+            </svg>
+            <span class="text-base lg:text-lg font-medium ml-2">Архив вакансий</span>
+        </a>
+    </li>
 
     <li>
-        <a href="#" class="relative group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
+        <a href="{{ route("employer.responses.index") }}" class="relative group text-blue-primary flex flex-row items-center transition-all duration-300 hover:opacity-75">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="group hover:opacity-75">
                 <path d="M10.0076 2.10365C8.60593 1.64993 7.0823 2.28104 6.41205 3.59294L5.60627 5.17011C5.51053 5.35751 5.35812 5.50992 5.17073 5.60566L3.59355 6.41144C2.28165 7.08169 1.65055 8.60532 2.10426 10.0069L2.64972 11.6919C2.71453 11.8921 2.71453 12.1077 2.64972 12.3079L2.10426 13.9929C1.65055 15.3945 2.28166 16.9181 3.59355 17.5883L5.17073 18.3941C5.35812 18.4899 5.51053 18.6423 5.60627 18.8297L6.41206 20.4068C7.08231 21.7187 8.60593 22.3498 10.0076 21.8961L11.6926 21.3507C11.8928 21.2859 12.1083 21.2859 12.3085 21.3507L13.9935 21.8961C15.3951 22.3498 16.9187 21.7187 17.589 20.4068L18.3948 18.8297C18.4905 18.6423 18.6429 18.4899 18.8303 18.3941L20.4075 17.5883C21.7194 16.9181 22.3505 15.3945 21.8968 13.9929L21.3513 12.3079C21.2865 12.1077 21.2865 11.8921 21.3513 11.6919L21.8968 10.0069C22.3505 8.60531 21.7194 7.08169 20.4075 6.41144L18.8303 5.60566C18.6429 5.50992 18.4905 5.3575 18.3948 5.17011L17.589 3.59294C16.9187 2.28104 15.3951 1.64993 13.9935 2.10365L12.3085 2.6491C12.1083 2.71391 11.8928 2.71391 11.6926 2.6491L10.0076 2.10365ZM8.19308 4.50286C8.41649 4.06556 8.92437 3.8552 9.39156 4.00643L11.0766 4.55189C11.6772 4.74632 12.3239 4.74632 12.9245 4.55189L14.6095 4.00643C15.0767 3.8552 15.5845 4.06556 15.808 4.50286L16.6137 6.08004C16.901 6.64222 17.3582 7.09946 17.9204 7.38668L19.4976 8.19246C19.9349 8.41588 20.1452 8.92375 19.994 9.39095L19.4485 11.076C19.2541 11.6766 19.2541 12.3232 19.4485 12.9238L19.994 14.6088C20.1452 15.076 19.9349 15.5839 19.4976 15.8073L17.9204 16.6131C17.3582 16.9003 16.901 17.3576 16.6137 17.9197L15.808 19.4969C15.5845 19.9342 15.0767 20.1446 14.6095 19.9933L12.9245 19.4479C12.3239 19.2535 11.6772 19.2535 11.0766 19.4479L9.39157 19.9933C8.92437 20.1446 8.41649 19.9342 8.19308 19.4969L7.38729 17.9197C7.10008 17.3576 6.64283 16.9003 6.08065 16.6131L4.50348 15.8073C4.06618 15.5839 3.85581 15.076 4.00705 14.6088L4.5525 12.9238C4.74693 12.3232 4.74693 11.6766 4.5525 11.076L4.00705 9.39095C3.85581 8.92375 4.06618 8.41588 4.50348 8.19246L6.08065 7.38668C6.64283 7.09946 7.10008 6.64222 7.38729 6.08004L8.19308 4.50286ZM6.76009 11.7573L11.0027 15.9999L18.0738 8.92885L16.6596 7.51464L11.0027 13.1715L8.17431 10.343L6.76009 11.7573Z" fill="#0B2641"/>
             </svg>
             <span class="text-base lg:text-lg font-medium ml-2">Отклики на вакансии</span>
-            <span class="text-white flex justify-center text-xs/3 items-center w-4 h-4 bg-green-primary rounded-full absolute -top-1.5 -left-1.5">2</span>
+            @if($responses)
+            <span class="text-white flex justify-center text-xs/3 items-center w-4 h-4 bg-green-primary rounded-full absolute -top-1.5 -left-1.5">{{ $responses }}</span>
+            @endif
         </a>
     </li>
 

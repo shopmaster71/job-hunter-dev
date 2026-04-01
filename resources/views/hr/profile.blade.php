@@ -37,7 +37,7 @@
                     </div>
                     <div class="w-full lg:w-5/15">
                         <div class="mt-1 lg:mt-12">
-                            <img src="{{ asset($hr->getPhoto->photo ?:'assets/img/no-photo.webp') }}" class="rounded-lg" alt="{{ 'Профиль HR-менеджера '.$hr->name.' '.$hr->surname }}" />
+                            <img src="{{ asset($hr->photoUrl) }}" class="rounded-lg" alt="{{ 'Профиль HR-менеджера '.$hr->name.' '.$hr->surname }}" />
                         </div>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="w-full mt-2 sm:mt-4">
-                        <label class="mb-2" for="message">Тема <sup class="text-red-500">*</sup></label>
+                        <label class="mb-2" for="theme">Тема <sup class="text-red-500">*</sup></label>
                         <input type="text" name="theme" id="theme" class="block w-full outline-none border border-[#cccccc] rounded-lg px-3 py-3 text-[#8F8F8F]" placeholder="Тема сообщения" required />
                     </div>
                     <div class="w-full mt-2 sm:mt-4 mb-4">

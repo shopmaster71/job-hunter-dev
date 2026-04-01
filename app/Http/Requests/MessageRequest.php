@@ -24,6 +24,7 @@ class MessageRequest extends FormRequest
     {
         return [
             'email' => 'required|string|max:255',
+            'theme' => 'required|string|max:255',
             'message' => 'required|string',
             'phone' => 'nullable|string|max:255',
             'status' => 'integer',

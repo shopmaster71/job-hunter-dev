@@ -14,10 +14,10 @@
                         <span></span>
                     </div>
                     <ul class="hidden lg:flex flex-row gap-12 text-base">
-                        <li><a href="#" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Соискателям</a></li>
-                        <li><a href="#" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Работодателям</a></li>
-                        <li><a href="#" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Агентам (HR)</a></li>
-                        <li><a href="#" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Новости</a></li>
+                        <li><a href="{{ route('vacancy.list') }}" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Соискателям</a></li>
+                        <li><a href="{{ route('page.show', ['slug' => 'rabotodatelyam']) }}" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Работодателям</a></li>
+                        <li><a href="{{ route("hr.search") }}" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Агентам (HR)</a></li>
+                        <li><a href="{{ route("news.list") }}" class="text-blue-primary transition duration-150 ease-in-out hover:opacity-75">Новости</a></li>
                     </ul>
                 </div>
             </div>
@@ -36,6 +36,16 @@
                         @if(auth()->user()->role == 2)
                             <a href="{{ route('employer.index') }}" class="button-login transition duration-150 ease-in-out">
                                 <span class="inline-block overflow-hidden sm:overflow-visible -indent-[10000px] sm:indent-0">{{ auth()->user()->email }}</span>
+                            </a>
+                        @endif
+                        @if(auth()->user()->role == 3)
+                            <a href="{{ route('agency.index') }}" class="button-login transition duration-150 ease-in-out">
+                                <span class="inline-block overflow-hidden sm:overflow-visible -indent-[10000px] sm:indent-0">{{ auth()->user()->email }}</span>
+                            </a>
+                        @endif
+                        @if(auth()->user()->role == 10)
+                            <a href="{{ route('admin.home') }}" class="button-login transition duration-150 ease-in-out">
+                                <span class="inline-block overflow-hidden sm:overflow-visible -indent-[10000px] sm:indent-0">Администратор</span>
                             </a>
                         @endif
 

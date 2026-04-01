@@ -49,12 +49,14 @@
                                         <div class="flex flex-col md:flex-row gap-1 md:gap-2">
                                             <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Отрасль <sup class="text-red-500">*</sup></label>
                                             <div class="w-full md:w-5/8 profile-fields relative border-b border-[#cccccc] ">
-                                                <select class="select block w-full new_select" name="sector">
-                                                    <option value="1" @if($employer->sector == 1) selected @endif>Медицина</option>
-                                                    <option value="2" @if($employer->sector == 2) selected @endif>Строительство</option>
-                                                    <option value="3" @if($employer->sector == 3) selected @endif>Производство</option>
-                                                    <option value="4" @if($employer->sector == 4) selected @endif>Сельское хозяйство</option>
-                                                    <option value="5" @if($employer->sector == 4) selected @endif>Бытовые услуги</option>
+                                                <select class="select_default block w-full py-1 text-blue-primary bg-transparent appearance-none focus:outline-none focus:ring-0 peer" name="industry_id">
+                                                    @foreach($industries as $industryGroup)
+                                                        <optgroup label="{{ $industryGroup->title }}">
+                                                            @foreach($industryGroup->industries as $industry)
+                                                                <option value="{{ $industry->id }}" {{ $employer->industry_id == $industry->id ? 'selected' : ''}}>{{ $industry->title }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endforeach
                                                 </select>
                                                 @if ($errors->has('sector'))
                                                     <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('sector')[0] }}</div>

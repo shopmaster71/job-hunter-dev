@@ -31,6 +31,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'employer' => \App\Http\Middleware\EmloyerMiddleware::class,
         ]);
     })
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'agency' => \App\Http\Middleware\AgencyMiddleware::class,
+        ]);
+    })
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'archive' => \App\Http\Middleware\EmployerOrAgencyMiddleware::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

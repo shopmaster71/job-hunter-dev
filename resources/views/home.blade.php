@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('title',  'JobHunter - сервис поиска работы')
 @section('description', 'JobHunter - сервис поиска работы')
-@section('body_class', 'body-grey-bg')
+@section('body_class', 'bg-[#F5F6F8]')
 @section('assets')
     <link href="{{ asset('assets/slick.css') }}" rel="stylesheet">
+
 @endsection
 
 @section('content')
@@ -66,13 +67,13 @@
                                         <div class="hr-slider-card-body flex flex-row justify-start gap-3 min-h-42">
                                             <div class="w-1/4">
                                                 <a href="{{route('hr.headhunter', ['slug' => $hr->slug]) }}">
-                                                    <img src="{{ asset($hr->getPhoto->photo ?:'assets/img/no-photo.webp') }}" class="w-full" alt="{{ 'HR-менеджер '.$hr->name.' '.$hr->surname }}" style="border-radius: 50%;" />
+                                                    <img src="{{ asset($hr->photoUrl) }}" class="w-full" alt="{{ 'HR-менеджер '.$hr->name.' '.$hr->surname }}" style="border-radius: 50%;" />
                                                 </a>
                                             </div>
                                             <div class="w-3/4">
                                                 <a href="{{route('hr.headhunter', ['slug' => $hr->slug]) }}">
                                                     <span class="text-[#929292] text-xs">{{ $hr->name.' '.$hr->surname }}</span>
-                                                    <h5 class="text-lg font-medium group-hover:text-white">{{ $hr->getInformation->advantage }}</h5>
+                                                    <h5 class="mt-1 text-lg/5 font-medium group-hover:text-white">{{ $hr->getInformation->advantage }}</h5>
                                                     <div class="w-full flex flex-row justify-between items-center gap-2 group-hover:text-white">
                                                         <div class="flex flex-row items-center gap-1 font-medium my-2">
                                                             <svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,126 +95,36 @@
                     </div>
                 </div>
                 @endif
-                <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-semibold">Топ работодателей</h2>
-                <div class="relevant-jobs-hits grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-5 sm:mt-10 w-full">
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ТехноПрогресс</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">3 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Далеко-далеко за словесными горами в стране гласных и согласных</p>
-                        </a>
+                @if(count($employers))
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-semibold">Топ работодателей</h2>
+                    <div class="relevant-jobs-hits grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-5 sm:mt-10 w-full">
+                        @foreach($employers->take(8) as $employer)
+                            <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
+                                <a href="{{ route('employer.profile', ['slug' => $employer->slug]) }}" class="block px-5 py-3 sm:px-6 sm:py-5">
+                                    <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">{{ $employer->title }}</h4>
+                                    <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">вакансии {{ count($employer->getVacancyList) }}</p>
+                                    <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">{{ Str::limit($employer->about, 50)  }}</p>
+                                </a>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЛидерПро</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">12 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Но текст не дал сбить себя с толку и наконец попал в свою копилку</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЭкоСфера</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">5 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Даже всемогущая пунктуация не имеет власти над рыбными текстами</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">НейроТехнологии</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">1 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Вдали от всех живут они в буквенных домах на берегу Семантика</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЭлитПроект</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">3 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Однажды одна маленькая строчка рыбного текста по имени Lorem ipsum</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">КреативПлюс</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">5 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Но текст не дал сбить себя с толку и наконец попал в свою копилку</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">БизнесРост</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">2 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Великий Оксмокс предупреждал ее о злых запятых, диких знаках вопроса</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">СмартИнновации</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">14 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Маленький ручеек Даль журчит по всей стране и обеспечивает ее</p>
-                        </a>
-                    </div>
-                </div>
-                <div class="category_hide relevant-jobs-hits grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-3 sm:mt-6 w-full" wfd-invisible="true" style="display: none;">
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ТехноПрогресс</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">3 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Далеко-далеко за словесными горами в стране гласных и согласных</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЛидерПро</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">12 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Но текст не дал сбить себя с толку и наконец попал в свою копилку</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЭкоСфера</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">5 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Даже всемогущая пунктуация не имеет власти над рыбными текстами</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">НейроТехнологии</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">1 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Вдали от всех живут они в буквенных домах на берегу Семантика</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">ЭлитПроект</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">3 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Однажды одна маленькая строчка рыбного текста по имени Lorem ipsum</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">КреативПлюс</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">5 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Но текст не дал сбить себя с толку и наконец попал в свою копилку</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">БизнесРост</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">2 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Великий Оксмокс предупреждал ее о злых запятых, диких знаках вопроса</p>
-                        </a>
-                    </div>
-                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
-                        <a href="#" class="block px-5 py-3 sm:px-6 sm:py-5">
-                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">СмартИнновации</h4>
-                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">14 вакансии</p>
-                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">Маленький ручеек Даль журчит по всей стране и обеспечивает ее</p>
-                        </a>
-                    </div>
-                </div>
-                <div class="more-job-hits w-full mb-5 sm:mb-0 sm:w-66 mt-5 sm:mt-15">
-                    <button class="more-jobs btn-utp-green inline w-full grow py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Ещё работодатели</button>
-                </div>
+                        @if(count($employers) > 8)
+                            <div class="category_hide relevant-jobs-hits grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-3 sm:mt-6 w-full" wfd-invisible="true" style="display: none;">
+                                @foreach($employers->skip(8) as $employer)
+                                    <div class="group bg-[#26374B] hover:bg-white transition duration-150 ease-in-out rounded-lg box-border">
+                                        <a href="{{ route('employer.profile', ['slug' => $employer->slug]) }}" class="block px-5 py-3 sm:px-6 sm:py-5">
+                                            <h4 class="text-white group-hover:text-blue-primary text-lg sm:text-xl font-medium">{{ $employer->title }}</h4>
+                                            <p class="text-white group-hover:text-blue-primary font-medium sm:pt-1 pb-1 sm:pb-2.5">вакансии {{ count($employer->getVacancyList) }}</p>
+                                            <p class="text-sm text-[#c4c4c4] group-hover:text-[#929292]">{{ Str::limit($employer->about, 50)  }}</p>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="more-job-hits w-full mb-5 sm:mb-0 sm:w-66 mt-5 sm:mt-15">
+                                <button class="more-jobs btn-utp-green inline w-full grow py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Ещё работодатели</button>
+                            </div>
+                        @endif
+                    @endif
             </div>
         </section>
         <section class="top-vacancies overflow-hidden">
@@ -222,137 +133,83 @@
                     <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-blue-primary font-semibold">Топ вакансии дня</h2>
                     <div class="top-vacancies-body flex flex-col lg:flex-row justify-between gap-4 mt-4 lg:mt-10">
                         <div class="top-vacancies-list w-full lg:w-7/10">
+                            @if(count($vacancies))
                             <div class="vacancies grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Хирург в стоматологическую клинику</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">260000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Наша клиника»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Хирург в стоматологическую клинику</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">260000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Наша клиника»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Программист в IT-компанию</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">180000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Новые технологии»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Программист в IT-компанию</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">180000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Новые технологии»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Косметолог в салон красоты</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">110000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Ромашки и цветочки»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Косметолог в салон красоты</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">110000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Ромашки и цветочки»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Грузчик в строительную компанию график сутками</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">60000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Строим дома»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Грузчик в строительную компанию график сутками</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">60000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Строим дома»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Менеджер для работы с клиентами</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">90000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Модная одежда»</span></a>
-                                </div>
-                                <div class="top-vacancy-item">
-                                    <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">Менеджер для работы с клиентами</h5>
-                                    <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary"><span class="diviger">90000</span> <i>₽</i></p>
-                                    <a href="#" class="top-vacancy-item-link pl-5"><span>«Модная одежда»</span></a>
-                                </div>
+                                @foreach($vacancies as $vacancy)
+                                    <div class="top-vacancy-item">
+                                        <h5 class="t-v-header pl-5 text-base md:text-lg leading-none font-semibold text-blue-primary relative">{{ $vacancy->position }}</h5>
+                                        <p class="top-vacancy-item-price pl-5 pt-1.5 md:py-1.5 text-lg md:text-xl font-semibold text-blue-primary">
+                                            @if($vacancy->salary_min)
+                                                <span class="diviger @if(!$vacancy->salary_max) ruble @endif">{{ $vacancy->salary_min }}</span> @if($vacancy->salary_max)- <span class="diviger ruble">{{ $vacancy->salary_max }}</span> @endif
+                                            @else
+                                                <span class="">По договорённости</span>
+                                            @endif
+                                        </p>
+                                        <a href="{{ route('vacancy.show', ['slug' => $vacancy->slug]) }}" class="block top-vacancy-item-link pl-5"><span class="inline-block">{{ $vacancy->organization }}</span></a>
+                                    </div>
+                                @endforeach
                             </div>
-                            <div class="more-job-hits w-full sm:w-66 mt-5">
-                                <a href="#" class="btn-utp-green block text-center w-full py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Все вакансии</a>
-                            </div>
+
+                                <div class="more-job-hits w-full sm:w-66 mt-5">
+                                <a href="{{ route('vacancy.list') }}" class="btn-utp-green block text-center w-full py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Все вакансии</a>
+                                </div>
+
+                            @endif
                         </div>
                         <div class="hidden lg:block top-vacancies-img w-3/10">
-                            <img src="assets/img/top-vacancies-img.png" class="responsive" alt="Топ вакансии дня" />
+                            <img src="{{ asset('assets/img/top-vacancies-img.png') }}"  alt="Топ вакансии дня" />
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+        @if(count($news))
         <section class="news mt-8 lg:mt-18">
             <div class="container mx-auto">
                 <div class="news-wrapper flex flex-col lg:flex-row justify-between gap-6">
                     <div class="news-list w-full lg:w-8/12">
                         <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-blue-primary font-semibold w-full lg:w-5/10">Последние новости рынка труда</h2>
                         <div class="news-list grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 w-full mt-5 lg:mt-15">
-                            <div class="news-list-item bg-white  px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
-                                <a href="#" class="block text-blue-primary">
-                                    <div class="news-item-icon">
-                                        <img src="assets/img/news-item-img.svg" width="42" height="42" class="responsive" alt="Новости рынка труда" />
-                                    </div>
-                                    <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">Как составить идеальное резюме</h4>
-                                    <p class="text-base/5 md:text-lg/6">Превью последней новости, текст в несколько интересных строчек</p>
-                                </a>
-                            </div>
-                            <div class="news-list-item bg-white px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
-                                <a href="#" class="block text-blue-primary">
-                                    <div class="news-item-icon">
-                                        <img src="assets/img/news-item-img.svg" width="42" height="42" class="responsive" alt="Новости рынка труда" />
-                                    </div>
-                                    <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">Тренды рынка труда 2025</h4>
-                                    <p class="text-base/5 md:text-lg/6">Превью последней новости, текст в несколько интересных строчек</p>
-                                </a>
-                            </div>
+                            @foreach($news->take(2) as $item)
+                                <div class="news-list-item bg-white  px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
+                                    <a href="{{ route('news.show', ['slug' => $item->slug]) }}" class="block text-blue-primary">
+                                        <div class="news-item-icon">
+                                            <img src="{{ asset('assets/img/news-item-img.svg') }}" width="42" height="42" class="responsive" alt="Новости рынка труда" />
+                                        </div>
+                                        <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">{{ Str::limit($item->title, 35) }}</h4>
+                                        <p class="text-base/5 md:text-lg/6">{{ Str::limit($item->content, 65) }}</p>
+                                    </a>
+                                </div>
+                            @endforeach
                             <div class="news-list-item news-list-link relative bg-blue-primary px-5 py-5 md:px-10 md:py-10 col-span-1 md:col-span-2 rounded-lg">
                                 <h3 class="text-white font-semibold text-lg md:text-2xl/7 lg:text-[40px]/12 w-full lg:w-3/4">На рынке труда каждый день изменения</h3>
                                 <p class="text-white text-base/5 md:text-lg/6 mt-3 lg:mt-7 pr-5 lg:pr-30">Каждый день на рынке труда происходят качественные изменения. Мы для вас подбираем самые актуальные новости по
                                     этой теме. Это поможет вам быстрее найти ту работу, к которой вы стремитесь.</p>
                                 <div class="more-job-hits w-full mt-5 lg:mt-12">
-                                    <a href="#" class="btn-utp-green block text-center w-full py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Все нововсти</a>
+                                    <a href="{{ route("news.list") }}" class="btn-utp-green block text-center w-full py-4 px-2 text-white text-lg font-semibold bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Все нововсти</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="news-list w-full lg:w-4/12">
                         <div class="news-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3 lg:gap-6 w-full">
-                            <div class="news-list-item bg-white px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
-                                <a href="#" class="block text-blue-primary">
-                                    <div class="news-item-icon">
-                                        <img src="assets/img/news-item-img.svg" width="42" height="42" class="responsive" alt="Новости рынка труда" />
-                                    </div>
-                                    <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">Как составить идеальное резюме</h4>
-                                    <p class="text-base md:text-lg/6">Превью последней новости, текст в несколько интересных строчек</p>
-                                </a>
-                            </div>
-                            <div class="news-list-item bg-white px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
-                                <a href="#" class="block text-blue-primary">
-                                    <div class="news-item-icon">
-                                        <img src="assets/img/news-item-img.svg" width="42" height="42" class="responsive" alt="Новости рынка труда" />
-                                    </div>
-                                    <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">Как составить идеальное резюме</h4>
-                                    <p class="text-base/5 md:text-lg/6">Превью последней новости, текст в несколько интересных строчек</p>
-                                </a>
-                            </div>
-                            <div class="news-list-item bg-white px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
-                                <a href="#" class="block text-blue-primary">
-                                    <div class="news-item-icon">
-                                        <img src="assets/img/news-item-img.svg" width="42" height="42" class="responsive" alt="Новости рынка труда" />
-                                    </div>
-                                    <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">Как составить идеальное резюме</h4>
-                                    <p class="text-base/5 md:text-lg/6">Превью последней новости, текст в несколько интересных строчек</p>
-                                </a>
-                            </div>
+                            @foreach($news->skip(2) as $item)
+                                <div class="news-list-item bg-white px-3 py-3 sm:px-5 sm:py-5 md:px-10 md:py-10 rounded-lg">
+                                    <a href="{{ route('news.show', ['slug' => $item->slug]) }}" class="block text-blue-primary">
+                                        <div class="news-item-icon">
+                                            <img src="{{ asset('assets/img/news-item-img.svg') }}" width="42" height="42" class="responsive" alt="Новости рынка труда" />
+                                        </div>
+                                        <h4 class="font-semibold text-base md:text-lg lg:text-2xl/7 py-3 md:py-6">{{ Str::limit($item->title, 35) }}</h4>
+                                        <p class="text-base md:text-lg/6">{{ Str::limit($item->content, 50) }}</p>
+                                    </a>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+        @endif
     </main>
     <!--Фильтры начало-->
     <div class="popup popup-primary popup-filter  w-[360px] ml-[-180px] sm:w-[600px] sm:ml-[-300px]">

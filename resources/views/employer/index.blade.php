@@ -45,14 +45,15 @@
                                         </div>
                                         <div class="flex flex-col md:flex-row gap-1 md:gap-2">
                                             <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Отрасль <sup class="text-red-500">*</sup></label>
-                                            <div class="w-full md:w-5/8 profile-fields relative border-b border-[#cccccc] ">
-                                                <select class="select block w-full new_select" name="sector">
-                                                    <option selected value="0">Выберите отрасль</option>
-                                                    <option value="1">Медицина</option>
-                                                    <option value="2">Строительство</option>
-                                                    <option value="3">Производство</option>
-                                                    <option value="4">Сельское хозяйство</option>
-                                                    <option value="5">Бытовые услуги</option>
+                                            <div class="w-full md:w-5/8 profile-fields custom_select relative border-b border-[#cccccc] ">
+                                                <select class="select_default block w-full py-1 text-blue-primary bg-transparent appearance-none focus:outline-none focus:ring-0 peer" name="industry_id">
+                                                    @foreach($industries as $industryGroup)
+                                                        <optgroup label="{{ $industryGroup->title }}">
+                                                            @foreach($industryGroup->industries as $industry)
+                                                                <option value="{{ $industry->id }}">{{ $industry->title }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endforeach
                                                 </select>
                                                 @if ($errors->has('sector'))
                                                     <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('sector')[0] }}</div>
@@ -130,7 +131,7 @@
                         @else
                             <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 mt-6 text-base md:text-lg">
                                 <li class="bg-gray-50 py-2 px-3"><b>Название:</b> {{ $employer->title }}</li>
-                                <li class="bg-gray-50 py-2 px-3"><b>Отрасль:</b> {{ array_search($employer->sector, ['Медицина' => 1, 'Строительство' => 2, 'Производство' => 3, 'Сельское хозяйство' => 4, 'Бытовые услуги' => 5]) }}</li>
+                                <li class="bg-gray-50 py-2 px-3"><b>Отрасль:</b> {{ $employer->getIndustry->title }}</li>
                                 <li class="bg-gray-50 py-2 px-3"><b>Город:</b> {{ $employer->city_name }}</li>
                                 <li class="bg-gray-50 py-2 px-3"><b>Адрес:</b> {{ $employer->address }}</li>
                             </ul>

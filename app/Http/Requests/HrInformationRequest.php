@@ -22,12 +22,14 @@ class HrInformationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sector' => 'required|integer',
+            'sector' => 'required|string',
             'advantage' => 'nullable|string|max:255',
             'about' => 'required|string',
             'experience' => 'required|integer',
             'services' => 'nullable|string|max:255',
             'city_name' => 'required|string|max:255',
+            'top' => 'string|nullable',
+            'abroad' => 'string|nullable'
         ];
     }
 

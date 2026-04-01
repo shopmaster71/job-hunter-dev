@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('applicant_id')->constrained('applicants')->onDelete('cascade');
             $table->string('phone')->nullable();
             $table->string('email');
-            $table->string('message');
+            $table->string('theme');
+            $table->text('message');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });

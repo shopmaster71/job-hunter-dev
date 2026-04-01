@@ -34,7 +34,7 @@ $(document).on('ready', function() {
 	$('.more-jobs').click(function(){
 	 	var hBlock = $('.category_hide');
 		$(this).toggleClass('active');
-		$(this).text(hBlock.is(':visible') ? 'Ещё профессии' : 'Скрыть');
+		$(this).text(hBlock.is(':visible') ? 'Ещё работодатели' : 'Скрыть');
 		hBlock.slideToggle("slow");
 		return false;
 	});

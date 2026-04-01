@@ -2,9 +2,6 @@ html, body {
     height: 100%;
 }
 
-.body-grey-bg{
-    background-color: #F5F6F8;
-}
 .container{
     padding:0 10px;
 }
@@ -17,7 +14,7 @@ html, body {
 	float:right;
 	margin:3px 0 0px 0px;
 	/*opacity:0;*/
-	
+
 }
 
 .navicon span{
@@ -29,7 +26,7 @@ html, body {
 	opacity: 1;
 	left: 0;
 	transform: rotate(0deg);
-		
+
 	}
 
 .navicon span:nth-child(1){
@@ -201,7 +198,7 @@ a.top-vacancy-item-link:hover{
 }
 a.top-vacancy-item-link span{
     position:relative;
-    padding-right:38px;
+    padding-right:35px;
 }
 a.top-vacancy-item-link span::after{
     content:"";
@@ -272,7 +269,7 @@ a.top-vacancy-item-link span::after{
   transition: transform .3s ease-in-out, visibility .3s ease-in-out;
   transition: transform .3s ease-in-out, visibility .3s ease-in-out, -webkit-transform .3s ease-in-out;
   z-index: 900;
-  
+
 }
 .mobile_panel .mobile_panel-close{
     width: 13px;
@@ -296,7 +293,7 @@ a.top-vacancy-item-link span::after{
         left: -340px;
         width: 340px;
     }
-   
+
     .mobile_panel.panel_open{
         -webkit-transform: translateX(340px);
         transform: translateX(340px);
@@ -356,7 +353,7 @@ a.top-vacancy-item-link span::after{
 
 .popup_body{
 	height: auto;
-	
+
     -ms-overflow-style: none;
     scrollbar-width: none;
     white-space: nowrap;
@@ -374,7 +371,7 @@ a.top-vacancy-item-link span::after{
         max-height: 400px;
    }
 }
-.popup_body::-webkit-scrollbar { 
+.popup_body::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
 }
 .region-list::after{
@@ -582,6 +579,21 @@ a.top-vacancy-item-link span::after{
   top: 50%;
   right: 5px;
 }
+.select_default{
+
+}
+.custom_select:after{
+    content: "";
+    width: 21px;
+    transition: 0.25s ease-in-out;
+    height: 10px;
+    background: url(img/arrow-down.svg) no-repeat;
+    background-size: contain;
+    position: absolute;
+    margin-top: -3.76px;
+    top: 50%;
+    right: 5px;
+}
 .select .new-select.on:after {
   transform: rotate(180deg);
 }
@@ -604,23 +616,23 @@ a.top-vacancy-item-link span::after{
   padding: 8px 5px;
 }
 
-  
+
  .profile-fields{
    position: relative;
 }
  .profile-fields .select .new-select {
-  
+
   height: 30px;
 
   font-size: 16px;
   font-weight: normal;
-  
+
 }
 .profile-fields .select .new-select__list {
     position:absolute;
     background:#fff;
 }
- 
+
 
 
 /* Скрыть стандартные ползунки */
@@ -662,10 +674,10 @@ a.filter-location-regions, a.filter-location-regions span{
     width:20px;
     height:20px;
     display:block;
-} 
+}
 a.filter-location-regions span{
     position:relative;
-} 
+}
 a.filter-location-regions span::after{
     content:"";
     width:20px;
@@ -676,14 +688,14 @@ a.filter-location-regions span::after{
     position: absolute;
     top:0;
     left:0;
-}     
-  
-  
+}
+
+
 a.filter-location-regions{
     width:20px;
     height:20px;
     display:block;
-} 
+}
 
 .vacancies-sorting-item::after{
     content:"";
@@ -693,22 +705,22 @@ a.filter-location-regions{
     position: absolute;
     top:0;
     left:0;
-}  
+}
 .vacancies-sorting-item.new::after{
     background: url(img/sort-new.svg) no-repeat;
-}  
+}
 .vacancies-sorting-item.salary::after{
     background: url(img/sort-salary.svg) no-repeat;
 }
 .vacancies-sorting-item.relevant::after{
     background: url(img/sort-relevant.svg) no-repeat;
-}  
+}
 .vacancies-sorting-item.columns::after{
     background: url(img/sort-columns.svg) no-repeat;
-}  
+}
 .vacancies-sorting-item.list::after{
     background: url(img/sort-list.svg) no-repeat;
-} 
+}
 .vacancies-sorting-item.news-new::after{
     background: url(img/sort-news-new.svg) no-repeat;
 }
@@ -851,7 +863,7 @@ ol.new-style{
 	counter-reset: num;
 }
 ol.new-style li:before {
-	content: counter(num); 
+	content: counter(num);
 	counter-increment: num;
 	display: inline-block;
 	position: absolute;

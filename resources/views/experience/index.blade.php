@@ -19,11 +19,7 @@
                                 <a href="#" class="btn-utp-green inline w-full grow py-3 px-6 text-white text-base:text-lg bg-green-primary border border-solid border-green-primary rounded-4xl hover:bg-green-primary-hover hover:border-green-primary-hover cursor-pointer transition duration-150 ease-in-out">Оформить подписку</a>
                             </div>
                         </div>
-                        <ul class="text-base lg:text-lg list-disc list-inside mt-4 lg:mt-9">
-                            <li>Откликов на вакансии <b>– 10</b></li>
-                            <li>Откликов от работодателей <b>– 20</b></li>
-                            <li>Создано резюме <b>– 5</b></li>
-                        </ul>
+                        <x-counts-applicant />
                     </div>
                     <div class="w-full mt-4 lg:mt-0 lg:w-1/3 py-5 px-5 lg:py-8 lg:px-7 xl:px-10 bg-white rounded-lg shadow-lg">
                         <x-applicant-component />
@@ -62,6 +58,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
         </section>
     </main>
 @endsection

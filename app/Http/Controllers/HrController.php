@@ -101,6 +101,7 @@ class HrController extends Controller
         }else{
             return back()->with('error', 'Заполните личную информацию');
         }
+
         HrInformation::query()->create($validated);
         return back()->with('success', 'Профессиональная информация добавлена');
     }
@@ -141,5 +142,11 @@ class HrController extends Controller
     {
         $hr = HeadHunter::query()->where('slug', $slug)->firstOrFail();
         return view('hr.profile', compact('hr'));
+    }
+
+    public function search(Request $request)
+    {
+        $hrs = HeadHunter::query()->orderByDesc('id')->whereHas('getInformation')->paginate(8);
+        return view('hr.search', compact('hrs'));
     }
 }

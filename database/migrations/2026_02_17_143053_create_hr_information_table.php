@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('sector');
             $table->string('city_name');
             $table->string('advantage')->nullable();
+            $table->boolean('top')->nullable()->default(false);
+            $table->boolean('abroad')->nullable()->default(false);
             $table->string('about');
             $table->integer('experience');
             $table->string('services');

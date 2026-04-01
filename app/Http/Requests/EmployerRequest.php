@@ -23,7 +23,7 @@ class EmployerRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'sector' => 'required|integer',
+            'industry_id' => 'required|integer',
             'city_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'about' => 'required|string',
@@ -39,7 +39,7 @@ class EmployerRequest extends FormRequest
     {
         return [
             'title.required' => 'Вы не указали название',
-            'sector.required' => 'Вы не указали отрасль',
+            'industry_id.required' => 'Вы не указали отрасль',
             'city_name.required' => 'Вы не выбрали город',
             'address.required' => 'Вы не указали адрес',
             'about.required' => 'Вы не рассказали о компании',

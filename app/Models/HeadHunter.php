@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -35,6 +36,20 @@ class HeadHunter extends Model
     public function getPhoto(): HasOne
     {
         return $this->hasOne(Photo::class, 'user_id', 'user_id');
+    }
+
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, $attributes) {
+                $default = '/assets/img/no-photo.webp';
+                $photo = $this->getRelationValue('getPhoto');
+                if ($photo && $photo->photo) {
+                    return $photo->photo;
+                }
+                return $default;
+            }
+        );
     }
 
     /**

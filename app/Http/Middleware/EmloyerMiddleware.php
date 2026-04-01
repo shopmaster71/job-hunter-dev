@@ -19,6 +19,6 @@ class EmloyerMiddleware
         if (Auth::check() && Auth::user()->role === 2) {
             return $next($request);
         }
-        abort('404');
+        return redirect()->route('login');
     }
 }

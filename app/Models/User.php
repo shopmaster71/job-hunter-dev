@@ -78,5 +78,10 @@ class User extends Authenticatable implements CanResetPassword //MustVerifyEmail
         return $this->hasOne(Employer::class);
     }
 
+    public function agency():HasOne
+    {
+        return $this->hasOne(Agency::class);
+    }
+
 
 }

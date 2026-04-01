@@ -5,14 +5,15 @@
                 <a href="/">
                     <img src="{{ asset('assets/img/footer-logo.svg') }}" alt="JobHunter" />
                 </a>
-                <p class="text-white text-[13px] mt-3 lg:mt-0">© 2005-2025. Все права защищены.</p>
+                <p class="text-white text-[13px] mt-3 lg:mt-0">© 2005-{{ date('Y') }}. Все права защищены.</p>
             </div>
             <div class="w-full md:w-4/12 flex flex-col">
                 <ul>
-                    <li><a href="" class="text-white">Персональные данные</a></li>
-                    <li class="py-1 lg:py-5"><a href="" class="text-white" >Пользовательское соглашение</a></li>
+                    <li><a href="{{ route('page.show', ['slug' => 'zashchita-personalnyh-dannyh']) }}" class="text-white">Персональные данные</a></li>
+                    <li class=""><a href="{{ route('page.show', ['slug' => 'polzovatelskoe-soglashenie']) }}" class="text-white" >Пользовательское соглашение</a></li>
+                    <li><a href="{{ route("hr.search") }}" class="text-white">Поиск по HR</a></li>
+                    <li><a href="{{ route("employer.search") }}" class="text-white">Поиск по работодателям</a></li>
                     <li><a href="" class="text-white">Карта сайта</a></li>
-                    <li><a href="{{ route('clear.all') }}" class="text-red-500">Очистить кэш</a></li>
                 </ul>
             </div>
             <div class="w-full md:w-4/12 flex flex-col justify-between">

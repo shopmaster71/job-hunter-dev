@@ -13,6 +13,8 @@ class Applicant extends Model
     use Sluggable;
     protected $fillable = ['user_id', 'slug', 'name', 'surname', 'patronymic', 'city_name', 'birth_date', 'gender', 'citizenship', 'education', 'driving_licence', 'married', 'children'];
 
+    protected $with = ['getExperiences', 'getEducations'];
+
     /**
      * @return array[]
      */

@@ -17,7 +17,8 @@
                             @endif
                             <div>Отправлено:<br/> {{ $message->created_at }}</div>
                         </div>
-                        <p>{{ $message->message }}</p>
+                        <p><b>Тема</b>:<br/>{{ $message->theme }}</p>
+                        <p><b>Сообщение</b>:<br/>{{ $message->message }}</p>
                     </div>
                 </div>
                 <div class="w-full mt-4 lg:mt-0 lg:w-1/3 py-5 px-5 lg:py-8 lg:px-7 xl:px-10 bg-white rounded-lg shadow-lg">

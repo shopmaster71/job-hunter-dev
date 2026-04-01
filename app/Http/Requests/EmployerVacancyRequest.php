@@ -22,20 +22,22 @@ class EmployerVacancyRequest extends FormRequest
     {
         return [
             'position' => 'required|string|max:255',
-            'employment_type' => 'required|string|max:255',
-            'schedule' => 'required|string|max:255',
+            'industry_id' => 'required|integer',
+            'specialization_id' => 'required|integer',
+            'employment_type_id' => 'required|integer',
+            'schedule_id' => 'required|integer',
+            'expertise_id' => 'required|integer',
+            'format_id' => 'required|integer',
             'salary_min' => 'nullable|integer',
             'salary_max' => 'nullable|integer|gte:salary_min',
             'contractual' => 'required|boolean',
-            'experience' => 'required|string|max:255',
-            'format' => 'required|string|max:255',
             'organization' => 'required|string|max:255',
             'city_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'charge' => 'required|string',
             'requirement' => 'nullable|string',
             'conditions' => 'nullable|string',
-            'additional' => 'nullable|string',
+            'additional' => 'nullable|array',
             'status' => 'nullable|integer',
         ];
     }
@@ -71,12 +73,14 @@ class EmployerVacancyRequest extends FormRequest
     {
         return [
             'position.required' => 'Вы не указали должность',
-            'city_name.required' => 'Вы не указали город',
+            'industry_id.required' => 'Вы не указали отрасль',
+            'specialization_id.required' => 'Вы не указали специализацию',
+            'employment_type_id.required' => 'Вы не указали тип занятости',
+            'schedule_id.required' => 'Вы не указали график работы',
+            'expertise_id.required' => 'Вы не указали требуемый опыт',
+            'format_id.required' => 'Вы не указали формат работы',
             'organization.required' => 'Вы не указали организацию',
-            'employment_type.required' => 'Вы не указали вид занятости',
-            'schedule.required' => 'Вы не указали график работы',
-            'experience.required' => 'Вы не указали необходимый опыт работы',
-            'format.required' => 'Вы не указали формат работы',
+            'city_name.required' => 'Вы не указали город',
             'address.required' => 'Вы не указали адрес работы',
             'charge.required' => 'Вы не указали обязанности по работе',
         ];

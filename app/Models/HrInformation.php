@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class HrInformation extends Model
 {
-    protected $fillable = ['head_hunter_id', 'city_name', 'sector', 'advantage', 'about', 'experience', 'services'];
+    protected $fillable = ['head_hunter_id', 'city_name', 'top', 'abroad', 'sector', 'advantage', 'about', 'experience', 'services'];
 }

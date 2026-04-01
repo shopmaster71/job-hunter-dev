@@ -101,7 +101,7 @@
                         </svg>
                       </span>
                             </label>
-                            <label class="cursor-pointer ml-2 text-[#cccccc] text-sm/4" for="check1">При входе и регистрации я даю согласие на обработку своих персональных данных в соответствии с <a href="#" class="underline">политикой обработки персональных данных</a></label>
+                            <label class="cursor-pointer ml-2 text-[#cccccc] text-sm/4" for="check1">При входе и регистрации я даю согласие на обработку своих персональных данных в соответствии с <a href="{{ route('page.show', ['slug' => 'zashchita-personalnyh-dannyh']) }}" class="underline">политикой обработки персональных данных</a></label>
                         </div>
                         <x-yandex-captcha />
                         <div class="utp-form-button w-full lg:w-5/8 mt-3 lg:mt-8">

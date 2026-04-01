@@ -6,6 +6,7 @@ use App\Http\Requests\MessageRequest;
 use App\Mail\MessageApplicant;
 use App\Models\Applicant;
 use App\Models\ApplicantMessage;
+use App\Models\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -17,8 +18,9 @@ class MessageController extends Controller
      */
     public function index()
     {
-        $messages = ApplicantMessage::query()->where('applicant_id', auth()->user()->applicant->id)->orderByDesc('id')->paginate(24);
-        return view('message.index', compact('messages'));
+        $messages = ApplicantMessage::query()->where('applicant_id', auth()->user()->applicant->id)->orderByDesc('id')->paginate(64);
+        $responses = Response::query()->where('applicant_id', auth()->user()->applicant->id)->orderByDesc('id')->paginate(64);
+        return view('message.index', compact('messages', 'responses'));
     }
 
     /**
@@ -55,5 +57,11 @@ class MessageController extends Controller
             'status' => 1
         ]);
         return view('message.show', compact('message'));
+    }
+
+    public function responseShow(string $id)
+    {
+        $response = Response::query()->findOrFail($id);
+        return view('message.response', compact('response'));
     }
 }

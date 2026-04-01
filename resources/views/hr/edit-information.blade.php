@@ -36,11 +36,11 @@
                                             <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary">Отрасль<sup class="text-red-500">*</sup></label>
                                             <div class="w-full md:w-5/8 profile-fields relative border-b border-[#cccccc] ">
                                                 <select class="select block w-full new_select" name="sector">
-                                                    <option value="1" @if($hr->getInformation->sector == 1) selected @endif>Медицина</option>
-                                                    <option value="2" @if($hr->getInformation->sector == 2) selected @endif>Строительство</option>
-                                                    <option value="3" @if($hr->getInformation->sector == 3) selected @endif>Производство</option>
-                                                    <option value="4" @if($hr->getInformation->sector == 4) selected @endif>Сельское хозяйство</option>
-                                                    <option value="5" @if($hr->getInformation->sector == 4) selected @endif>Бытовые услуги</option>
+                                                    <option value="1" @if($hr->getInformation->sector == 'Медицина') selected @endif>Медицина</option>
+                                                    <option value="2" @if($hr->getInformation->sector == 'Строительство') selected @endif>Строительство</option>
+                                                    <option value="3" @if($hr->getInformation->sector == 'Производство') selected @endif>Производство</option>
+                                                    <option value="4" @if($hr->getInformation->sector == 'Сельское хозяйство') selected @endif>Сельское хозяйство</option>
+                                                    <option value="5" @if($hr->getInformation->sector == 'Бытовые услуги') selected @endif>Бытовые услуги</option>
                                                 </select>
                                                 @if ($errors->has('sector'))
                                                     <div class="invalid-feedback text-red-500 text-sm mt-1">{{ $errors->get('sector')[0] }}</div>
@@ -57,6 +57,34 @@
                                                 @endif
                                             </div>
                                         </div>
+                                        <div class="flex flex-col md:flex-row gap-1 md:gap-2">
+                                            <label class="w-full md:w-3/8 text-base md:text-lg text-blue-primary"></label>
+                                            <div class="w-full md:w-5/8 py-1">
+                                                <div class="flex items-start">
+                                                    <label class="flex items-center cursor-pointer relative">
+                                                        <input type="checkbox" name="top" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="top" value="1" {{ $hr->getInformation->top ? 'checked' : ''}} />
+                                                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                    </label>
+                                                    <label class="cursor-pointer ml-2 text-[#53575C] text-base/5" for="top">Работаю с топ-менеджерами</label>
+                                                </div>
+                                                <div class="flex items-start mt-2">
+                                                    <label class="flex items-center cursor-pointer relative">
+                                                        <input type="checkbox" name="abroad" class="peer h-5 w-5 cursor-pointer transition-all appearance-none rounded hover:shadow-md border border-[#cccccc] checked:bg-green-primary checked:border-green-primary" id="abroad" value="1" {{ $hr->getInformation->abroad ? 'checked' : ''}} />
+                                                        <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </span>
+                                                    </label>
+                                                    <label class="cursor-pointer ml-2 text-[#53575C] text-base/5" for="abroad">Ищу работу за рубежом</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div class="w-full lg:w-1/2 flex flex-col gap-4 mt-2">
                                         <div class="flex flex-col md:flex-row gap-1 md:gap-2">
